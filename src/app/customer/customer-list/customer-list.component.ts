@@ -4,6 +4,7 @@ import { Customer } from '../model/customer';
 import { CustomerService } from '../customer.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CustomerEditComponent } from '../customer-edit/customer-edit.component';
+import { DialogConfirmationComponent } from 'src/app/core/dialog-confirmation/dialog-confirmation.component';
 
 
 @Component({
@@ -44,4 +45,18 @@ export class CustomerListComponent implements OnInit {
       this.ngOnInit();
     });
   }
+
+  deleteCustomer(customer: Customer): void {    
+    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+      data: { title: "Eliminar cliente", description: "Atención: si borra el cliente se perderán sus datos.<br> ¿Desea eliminar el cliente?" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.customerService.deleteCustomer(customer.id).subscribe(result => {
+          this.ngOnInit();
+        }); 
+      }
+    });
+  }  
 }

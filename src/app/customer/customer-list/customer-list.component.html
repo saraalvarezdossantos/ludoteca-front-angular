@@ -8,7 +8,7 @@
         </ng-container>
 
         <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef> Nombre categoría  </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef> Nombre cliente  </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
         </ng-container>
 
@@ -18,7 +18,9 @@
                 <button mat-icon-button color="primary" (click)="editCustomer(element)">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="accent"><mat-icon>clear</mat-icon></button>
+                <button mat-icon-button color="accent" (click)="deleteCustomer(element)">
+                <mat-icon>clear</mat-icon>
+                </button>
             </mat-cell>
         </ng-container>
 
