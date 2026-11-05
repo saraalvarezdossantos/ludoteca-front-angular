@@ -2,24 +2,28 @@ import { Injectable } from '@angular/core';
 import { Customer } from './model/customer';
 import { Observable, of } from 'rxjs';
 import { CUSTOMER_DATA } from './model/mock.customers';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getCustomers(): Observable<Customer[]> {
-    return of(CUSTOMER_DATA);  //¡Revisar cuando se conecte backend!
+    return this.http.get<Customer[]>('http://localhost:8080/customers');
   }
 
   saveCustomer(customer: Customer): Observable<Customer> {
-    return of(null);
+    let url = 'http://localhost:8080/customers';
+        if (customer.id != null) url += '/'+customer.id;
+
+        return this.http.put<Customer>(url, customer);
   }
 
   deleteCustomer(idCustomer : number): Observable<any> {
-    return of(null);
+    return this.http.delete('http://localhost:8080/customers/' + idCustomer);
   }  
 
 }
