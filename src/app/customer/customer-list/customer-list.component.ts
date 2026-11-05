@@ -26,15 +26,22 @@ export class CustomerListComponent implements OnInit {
   }
 
   createCustomer() {    
-       const dialogRef = this.dialog.open(CustomerEditComponent, {
-      data: {}
+      const dialogRef = this.dialog.open(CustomerEditComponent, {
+        data: {}
+      });
+
+      dialogRef.afterClosed().subscribe(() => {
+        this.ngOnInit();
+      });
+  }
+
+  editCustomer(customer: Customer): void {
+    const dialogRef = this.dialog.open(CustomerEditComponent, {
+      data: { customer }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       this.ngOnInit();
-    });  
-
-    }
-
+    });
+  }
 }
-
