@@ -4,6 +4,8 @@ import { Loan } from './model/loan';
 import { LOAN_DATA } from './model/mock-loans';
 import { LoanPage } from './model/loan-page';
 import { Pageable } from '../core/model/page/Pageable';
+import { LOAN_DATA_LIST } from './model/mock-loans-list';
+
 
 @Injectable({
     providedIn: 'root'
@@ -25,14 +27,15 @@ export class LoanService {
     }
 
     getLoanPage(pageable: Pageable): Observable<LoanPage> {
+       const start = pageable.pageNumber * pageable.pageSize;
+        const end = start + pageable.pageSize;
 
-    return of({
-        content: LOAN_DATA,
-        pageable: pageable,
-        totalElements: LOAN_DATA.length
-    });
-
-}
+        return of({
+            content: LOAN_DATA_LIST.slice(start, end),
+            pageable: pageable,
+            totalElements: LOAN_DATA_LIST.length
+        });
+    }
 
 }
 
