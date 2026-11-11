@@ -67,14 +67,57 @@ export class LoanEditComponent implements OnInit {
         );
     }
 
-    onSave(): void {
+    /*   onSave(): void {
+           console.log('SAVE');
+           this.loanService.saveLoan(this.loan).subscribe(() => {
+               this.dialogRef.close();
+           });
+       } */
 
-        this.loanService.saveLoan(this.loan).subscribe(() => {
-            this.dialogRef.close();
+    onSave(): void {
+        if (this.isEndDateBeforeStartDate()) {
+            return;
+        }
+
+        if (this.isLoanTooLong()) {
+            return;
+        }
+
+        this.loanService.saveLoan(this.loan).subscribe({
+            next: () => {
+                this.dialogRef.close();
+            },
+            error: (error) => {
+                alert('No se ha podido guardar el préstamo');
+                console.error(error);
+            }
         });
+
     }
 
     onClose(): void {
         this.dialogRef.close();
+    }
+
+    //Para comprobar si la fecha de fin es anterior a la fecha de inicio y mostrar mensaje en el formulairio:
+
+    isEndDateBeforeStartDate(): boolean {
+
+        return this.loan?.startDate != null
+            && this.loan?.endDate != null
+            && this.loan.endDate < this.loan.startDate;
+    }
+
+    isLoanTooLong(): boolean {
+
+        if (!this.loan?.startDate || !this.loan?.endDate) {
+            return false;
+        }
+
+        const days =
+            (this.loan.endDate.getTime() - this.loan.startDate.getTime())
+            / (1000 * 60 * 60 * 24);
+
+        return days > 14;
     }
 }

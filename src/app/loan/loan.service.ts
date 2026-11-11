@@ -5,6 +5,7 @@ import { LOAN_DATA } from './model/mock-loans';
 import { LoanPage } from './model/loan-page';
 import { Pageable } from '../core/model/page/Pageable';
 import { LOAN_DATA_LIST } from './model/mock-loans-list';
+import { HttpClient } from '@angular/common/http';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ import { LOAN_DATA_LIST } from './model/mock-loans-list';
 })
 export class LoanService {
 
-    constructor() { }
+    constructor(private http: HttpClient) { }
 
     getLoans(
         gameId?: number,
@@ -23,19 +24,26 @@ export class LoanService {
     }
 
     saveLoan(loan: Loan): Observable<void> {
-        return of(void 0);
+        let url = 'http://localhost:8080/loan';
+
+        if (loan.id != null) {
+            url += '/' + loan.id;
+        }
+        return this.http.put<void>(url, loan);
     }
 
     getLoanPage(pageable: Pageable): Observable<LoanPage> {
-       const start = pageable.pageNumber * pageable.pageSize;
-        const end = start + pageable.pageSize;
-
-        return of({
-            content: LOAN_DATA_LIST.slice(start, end),
-            pageable: pageable,
-            totalElements: LOAN_DATA_LIST.length
-        });
+        return this.http.post<LoanPage>(
+            'http://localhost:8080/loan',
+            { pageable: pageable }
+        );
     }
+
+    deleteLoan(loanId: number): Observable<void> {
+        return this.http.delete<void>(
+            'http://localhost:8080/loan/' + loanId
+        );
+    }   
 
 }
 
