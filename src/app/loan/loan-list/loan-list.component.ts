@@ -1,12 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+
 import { LoanService } from '../loan.service';
 import { Loan } from '../model/loan';
+import { LoanEditComponent } from '../loan-edit/loan-edit.component';
+
 import { GameService } from 'src/app/game/game.service';
 import { Game } from 'src/app/game/model/Game';
+
 import { CustomerService } from 'src/app/customer/customer.service';
 import { Customer } from 'src/app/customer/model/customer';
-import { LoanEditComponent } from '../loan-edit/loan-edit.component';
+
+import { Pageable } from 'src/app/core/model/page/Pageable';
 
 @Component({
     selector: 'app-loan-list',
@@ -14,11 +21,19 @@ import { LoanEditComponent } from '../loan-edit/loan-edit.component';
     styleUrls: ['./loan-list.component.scss']
 })
 export class LoanListComponent implements OnInit {
-   displayedColumns: string[] = [
+
+    pageNumber: number = 0;
+    pageSize: number = 5;
+    totalElements: number = 0;
+
+    dataSource = new MatTableDataSource<Loan>();
+
+    displayedColumns: string[] = [
         'game',
         'customer',
         'startDate',
-        'endDate'
+        'endDate',
+        'action'
     ];
 
     loans: Loan[];
@@ -34,14 +49,12 @@ export class LoanListComponent implements OnInit {
         private loanService: LoanService,
         private gameService: GameService,
         private customerService: CustomerService,
-        public dialog: MatDialog,
+        public dialog: MatDialog
     ) { }
 
     ngOnInit(): void {
 
-        this.loanService.getLoans().subscribe(
-            loans => this.loans = loans
-        );
+        this.loadPage();
 
         this.gameService.getGames().subscribe(
             games => this.games = games
@@ -50,6 +63,30 @@ export class LoanListComponent implements OnInit {
         this.customerService.getCustomers().subscribe(
             customers => this.customers = customers
         );
+    }
+
+    loadPage(event?: PageEvent): void {
+
+        let pageable: Pageable = {
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize,
+            sort: [{
+                property: 'id',
+                direction: 'ASC'
+            }]
+        };
+
+        if (event != null) {
+            pageable.pageNumber = event.pageIndex;
+            pageable.pageSize = event.pageSize;
+        }
+
+        this.loanService.getLoanPage(pageable).subscribe(data => {
+            this.dataSource.data = data.content;
+            this.pageNumber = data.pageable.pageNumber;
+            this.pageSize = data.pageable.pageSize;
+            this.totalElements = data.totalElements;
+        });
     }
 
     onCleanFilter(): void {
@@ -68,27 +105,33 @@ export class LoanListComponent implements OnInit {
         let date = this.filterDate;
 
         this.loanService.getLoans(gameId, customerId, date).subscribe(
-            loans => this.loans = loans
+            loans => this.dataSource.data = loans
         );
     }
 
-    createLoan() {
+    createLoan(): void {
+
         const dialogRef = this.dialog.open(LoanEditComponent, {
             data: {}
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            this.ngOnInit();
+        dialogRef.afterClosed().subscribe(() => {
+            this.loadPage();
         });
     }
 
-    editLoan(loan: Loan) {
+    editLoan(loan: Loan): void {
+
         const dialogRef = this.dialog.open(LoanEditComponent, {
             data: { loan: loan }
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            this.onSearch();
+        dialogRef.afterClosed().subscribe(() => {
+            this.loadPage();
         });
+    }
+
+    deleteLoan(loan: Loan): void {
+
     }
 }
