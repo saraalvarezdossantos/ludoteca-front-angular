@@ -19,8 +19,26 @@ export class LoanService {
         gameId?: number,
         customerId?: number,
         date?: Date
-    ): Observable<Loan[]> {
-        return of(LOAN_DATA);
+    ): Observable<LoanPage> {
+
+        const pageable: Pageable = {
+            pageNumber: 0,
+            pageSize: 5,
+            sort: [{
+                property: 'id',
+                direction: 'ASC'
+            }]
+        };
+
+        return this.http.post<LoanPage>(
+            'http://localhost:8080/loan',
+            {
+                gameId: gameId,
+                customerId: customerId,
+                date: date,
+                pageable: pageable
+            }
+        );
     }
 
     saveLoan(loan: Loan): Observable<void> {
@@ -43,7 +61,7 @@ export class LoanService {
         return this.http.delete<void>(
             'http://localhost:8080/loan/' + loanId
         );
-    }   
+    }
 
 }
 

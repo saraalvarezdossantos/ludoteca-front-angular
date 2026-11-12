@@ -29,6 +29,7 @@ export class LoanListComponent implements OnInit {
     dataSource = new MatTableDataSource<Loan>();
 
     displayedColumns: string[] = [
+        'id',
         'game',
         'customer',
         'startDate',
@@ -99,15 +100,27 @@ export class LoanListComponent implements OnInit {
     }
 
     onSearch(): void {
+        console.log('FILTRAR');
 
-        let gameId = this.filterGame != null ? this.filterGame.id : null;
-        let customerId = this.filterCustomer != null ? this.filterCustomer.id : null;
-        let date = this.filterDate;
 
-        this.loanService.getLoans(gameId, customerId, date).subscribe(
-            loans => this.dataSource.data = loans
-        );
-    }
+    let gameId =
+        this.filterGame != null ? this.filterGame.id : null;
+
+    let customerId =
+        this.filterCustomer != null ? this.filterCustomer.id : null;
+
+    let date = this.filterDate;
+
+    this.loanService
+        .getLoans(gameId, customerId, date)
+        .subscribe(page => {
+
+            this.dataSource.data = page.content;
+            this.totalElements = page.totalElements;
+            this.pageNumber = page.pageable.pageNumber;
+            this.pageSize = page.pageable.pageSize;
+        });
+}
 
     createLoan(): void {
 
