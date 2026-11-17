@@ -25,13 +25,18 @@ export class AuthorEditComponent implements OnInit {
         else {
             this.author = new Author();
         }
-    }
+    }  
 
     onSave() {
-        this.authorService.saveAuthor(this.author).subscribe(result =>  {
+    this.authorService.saveAuthor(this.author).subscribe({
+        next: () => {
             this.dialogRef.close();
-        }); 
-    }  
+        },
+        error: (error) => {
+            alert(error.error);
+        }
+    });
+}
 
     onClose() {
         this.dialogRef.close();

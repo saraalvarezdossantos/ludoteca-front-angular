@@ -28,48 +28,48 @@ export class LoanEditComponent implements OnInit {
 
     ngOnInit(): void {
 
-    if (this.data.loan != null) {
-        this.loan = Object.assign({}, this.data.loan);
+        if (this.data.loan != null) {
+            this.loan = Object.assign({}, this.data.loan);
 
-        this.loan.startDate = new Date(this.loan.startDate as any);
-        this.loan.endDate = new Date(this.loan.endDate as any);
+            this.loan.startDate = new Date(this.loan.startDate as any);
+            this.loan.endDate = new Date(this.loan.endDate as any);
 
-    } else {
-        this.loan = new Loan();
+        } else {
+            this.loan = new Loan();
+        }
+
+        this.gameService.getGames().subscribe(
+            games => {
+                this.games = games;
+
+                if (this.loan.game != null) {
+                    let gameFilter: Game[] = games.filter(
+                        game => game.id == this.loan.game.id
+                    );
+
+                    if (gameFilter.length > 0) {
+                        this.loan.game = gameFilter[0];
+                    }
+                }
+            }
+        );
+
+        this.customerService.getCustomers().subscribe(
+            customers => {
+                this.customers = customers;
+
+                if (this.loan.customer != null) {
+                    let customerFilter: Customer[] = customers.filter(
+                        customer => customer.id == this.loan.customer.id
+                    );
+
+                    if (customerFilter.length > 0) {
+                        this.loan.customer = customerFilter[0];
+                    }
+                }
+            }
+        );
     }
-
-    this.gameService.getGames().subscribe(
-        games => {
-            this.games = games;
-
-            if (this.loan.game != null) {
-                let gameFilter: Game[] = games.filter(
-                    game => game.id == this.loan.game.id
-                );
-
-                if (gameFilter.length > 0) {
-                    this.loan.game = gameFilter[0];
-                }
-            }
-        }
-    );
-
-    this.customerService.getCustomers().subscribe(
-        customers => {
-            this.customers = customers;
-
-            if (this.loan.customer != null) {
-                let customerFilter: Customer[] = customers.filter(
-                    customer => customer.id == this.loan.customer.id
-                );
-
-                if (customerFilter.length > 0) {
-                    this.loan.customer = customerFilter[0];
-                }
-            }
-        }
-    );
-}
 
     /*   onSave(): void {
            console.log('SAVE');
@@ -91,8 +91,9 @@ export class LoanEditComponent implements OnInit {
             next: () => {
                 this.dialogRef.close();
             },
+            //CORRECCIÓN: Manejo de errores y HttpStatus: aplicado en backend y recogido aquí:
             error: (error) => {
-                alert('No se ha podido guardar el préstamo');
+                alert(error.error);
                 console.error(error);
             }
         });

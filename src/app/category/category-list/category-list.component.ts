@@ -25,7 +25,7 @@ export class CategoryListComponent implements OnInit {
   fecha = new Date(); //fecha actual, formato español: 2024-06-05T12:34:56.789Z
 
   constructor(
-    private categoryService: CategoryService, 
+    private categoryService: CategoryService,
     private dialog: MatDialog
   ) { }
 
@@ -44,14 +44,14 @@ export class CategoryListComponent implements OnInit {
   }
 
   //Para que funcione botón "Nueva categoría" y abra el diálogo: inyectar MatDialog en el constructor y usarlo para abrir el diálogo con el CategoryEditComponent
-  createCategory() {    
+  createCategory() {
     const dialogRef = this.dialog.open(CategoryEditComponent, {
       data: {}  //datos de creción de categoría
     });
 
     dialogRef.afterClosed().subscribe(result => {
       this.ngOnInit();
-    }); 
+    });
   }
 
   editCategory(category: Category) {
@@ -66,8 +66,13 @@ export class CategoryListComponent implements OnInit {
 
   deleteCategory(category: Category): void {
     this.categoryService.deleteCategory(category.id).subscribe({
-      next: () => this.ngOnInit(),
-      error: error => console.error('Error al borrar la categoría', error)
+      next: () => {
+        this.ngOnInit();
+      },
+      error: (error) => {
+        alert(error.error);
+        console.error(error);
+      }
     });
   }
 

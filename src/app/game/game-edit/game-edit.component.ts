@@ -69,9 +69,16 @@ export class GameEditComponent implements OnInit {
     }
 
     onSave() {
-        this.gameService.saveGame(this.game).subscribe(result => {
-            this.dialogRef.close();
-        });    
+        this.gameService.saveGame(this.game).subscribe({
+            next: () => {
+                this.dialogRef.close();
+            },
+            //CORRECCIÓN: Manejo de errores y HttpStatus: aplicado en backend y recogido aquí:
+            error: (error) => {
+                alert(error.error);
+                console.error(error);
+            }
+        });
     }  
 
     onClose() {

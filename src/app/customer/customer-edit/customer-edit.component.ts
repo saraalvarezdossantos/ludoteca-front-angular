@@ -11,7 +11,7 @@ import { Customer } from '../model/customer';
 })
 export class CustomerEditComponent implements OnInit {
 
-  customer : Customer;
+  customer: Customer;
 
   constructor(
     public dialogRef: MatDialogRef<CustomerEditComponent>,
@@ -20,19 +20,26 @@ export class CustomerEditComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-  if (this.data.customer != null) {
-    this.customer = Object.assign({}, this.data.customer);
+    if (this.data.customer != null) {
+      this.customer = Object.assign({}, this.data.customer);
+    }
+    else {
+      this.customer = new Customer();
+    }
   }
-  else {
-    this.customer = new Customer();
-  }
-}
 
   onSave() {
-    this.customerService.saveCustomer(this.customer).subscribe(result => {
-      this.dialogRef.close();
-    });    
-  }  
+    this.customerService.saveCustomer(this.customer).subscribe({
+      next: () => {
+        this.dialogRef.close();
+      },
+      //CORRECCIÓN: Manejo de errores y HttpStatus: aplicado en backend y recogido aquí:
+      error: (error) => {
+        alert(error.error);
+        console.error(error);
+      }
+    });
+  }
 
   onClose() {
     this.dialogRef.close();

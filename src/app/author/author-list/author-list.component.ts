@@ -9,9 +9,9 @@ import { AuthorService } from '../author.service';
 import { Author } from '../model/Author';
 
 @Component({
-selector: 'app-author-list',
-templateUrl: './author-list.component.html',
-styleUrls: ['./author-list.component.scss']
+    selector: 'app-author-list',
+    templateUrl: './author-list.component.html',
+    styleUrls: ['./author-list.component.scss']
 })
 export class AuthorListComponent implements OnInit {
 
@@ -35,7 +35,7 @@ export class AuthorListComponent implements OnInit {
        */
     loadPage(event?: PageEvent) {
 
-        let pageable : Pageable =  {
+        let pageable: Pageable = {
             pageNumber: this.pageNumber,
             pageSize: this.pageSize,
             sort: [{
@@ -56,39 +56,45 @@ export class AuthorListComponent implements OnInit {
             this.totalElements = data.totalElements;
         });
 
-    }  
+    }
 
-    createAuthor() {      
+    createAuthor() {
         const dialogRef = this.dialog.open(AuthorEditComponent, {
             data: {}
         });
 
         dialogRef.afterClosed().subscribe(result => {
             this.ngOnInit();
-        });      
-    }  
+        });
+    }
 
-    editAuthor(author: Author) {    
+    editAuthor(author: Author) {
         const dialogRef = this.dialog.open(AuthorEditComponent, {
             data: { author: author }
         });
 
         dialogRef.afterClosed().subscribe(result => {
             this.ngOnInit();
-        });    
+        });
     }
 
-    deleteAuthor(author: Author) {    
+    deleteAuthor(author: Author) {
         const dialogRef = this.dialog.open(DialogConfirmationComponent, {
             data: { title: "Eliminar autor", description: "Atención si borra el autor se perderán sus datos.<br> ¿Desea eliminar el autor?" }
         });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.authorService.deleteAuthor(author.id).subscribe(result =>  {
-                    this.ngOnInit();
-                }); 
+                this.authorService.deleteAuthor(author.id).subscribe({
+                    next: () => {
+                        this.ngOnInit();
+                    },
+                    error: (error) => {
+                        alert(error.error);
+                        console.error(error);
+                    }
+                });
             }
         });
-    }  
+    }
 }

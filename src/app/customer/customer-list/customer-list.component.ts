@@ -26,14 +26,14 @@ export class CustomerListComponent implements OnInit {
 
   }
 
-  createCustomer() {    
-      const dialogRef = this.dialog.open(CustomerEditComponent, {
-        data: {}
-      });
+  createCustomer() {
+    const dialogRef = this.dialog.open(CustomerEditComponent, {
+      data: {}
+    });
 
-      dialogRef.afterClosed().subscribe(() => {
-        this.ngOnInit();
-      });
+    dialogRef.afterClosed().subscribe(() => {
+      this.ngOnInit();
+    });
   }
 
   editCustomer(customer: Customer): void {
@@ -46,17 +46,19 @@ export class CustomerListComponent implements OnInit {
     });
   }
 
-  deleteCustomer(customer: Customer): void {    
+  deleteCustomer(customer: Customer): void {
     const dialogRef = this.dialog.open(DialogConfirmationComponent, {
       data: { title: "Eliminar cliente", description: "Atención: si borra el cliente se perderán sus datos.<br> ¿Desea eliminar el cliente?" }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.customerService.deleteCustomer(customer.id).subscribe(result => {
-          this.ngOnInit();
-        }); 
+    this.customerService.deleteCustomer(customer.id).subscribe({
+      next: () => {
+        this.ngOnInit();
+      },
+      error: (error) => {
+        alert(error.error);
+        console.error(error);
       }
     });
-  }  
+  }
 }

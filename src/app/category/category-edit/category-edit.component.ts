@@ -29,10 +29,17 @@ export class CategoryEditComponent implements OnInit {
   }
 
   onSave() {
-    this.categoryService.saveCategory(this.category).subscribe(result => {
-      this.dialogRef.close();
-    });    
-  }  
+    this.categoryService.saveCategory(this.category).subscribe({
+      next: () => {
+        this.dialogRef.close();
+      },
+      //CORRECCIÓN: Manejo de errores y HttpStatus: aplicado en backend y recogido aquí:
+      error: (error) => {
+        alert(error.error);
+        console.error(error);
+      }
+    });
+  }
 
   onClose() {
     this.dialogRef.close();

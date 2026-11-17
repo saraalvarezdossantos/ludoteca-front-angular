@@ -145,8 +145,14 @@ export class LoanListComponent implements OnInit {
     }
 
     deleteLoan(loan: Loan): void {
-        this.loanService.deleteLoan(loan.id).subscribe(() => {
+    this.loanService.deleteLoan(loan.id).subscribe({
+        next: () => {
             this.loadPage();
-        });
-    }
+        },
+        error: (error) => {
+            alert(error.error);
+            console.error(error);
+        }
+    });
+}
 }
