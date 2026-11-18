@@ -12,7 +12,7 @@ import { Game } from 'src/app/game/model/Game';
 
 import { CustomerService } from 'src/app/customer/customer.service';
 import { Customer } from 'src/app/customer/model/customer';
-
+import { DialogConfirmationComponent } from 'src/app/core/dialog-confirmation/dialog-confirmation.component';
 import { Pageable } from 'src/app/core/model/page/Pageable';
 
 @Component({
@@ -103,24 +103,24 @@ export class LoanListComponent implements OnInit {
         console.log('FILTRAR');
 
 
-    let gameId =
-        this.filterGame != null ? this.filterGame.id : null;
+        let gameId =
+            this.filterGame != null ? this.filterGame.id : null;
 
-    let customerId =
-        this.filterCustomer != null ? this.filterCustomer.id : null;
+        let customerId =
+            this.filterCustomer != null ? this.filterCustomer.id : null;
 
-    let date = this.filterDate;
+        let date = this.filterDate;
 
-    this.loanService
-        .getLoans(gameId, customerId, date)
-        .subscribe(page => {
+        this.loanService
+            .getLoans(gameId, customerId, date)
+            .subscribe(page => {
 
-            this.dataSource.data = page.content;
-            this.totalElements = page.totalElements;
-            this.pageNumber = page.pageable.pageNumber;
-            this.pageSize = page.pageable.pageSize;
-        });
-}
+                this.dataSource.data = page.content;
+                this.totalElements = page.totalElements;
+                this.pageNumber = page.pageable.pageNumber;
+                this.pageSize = page.pageable.pageSize;
+            });
+    }
 
     createLoan(): void {
 
@@ -145,14 +145,26 @@ export class LoanListComponent implements OnInit {
     }
 
     deleteLoan(loan: Loan): void {
-    this.loanService.deleteLoan(loan.id).subscribe({
-        next: () => {
-            this.loadPage();
-        },
-        error: (error) => {
-            alert(error.error);
-            console.error(error);
-        }
-    });
-}
+
+        const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+            data: {
+                title: "Eliminar préstamo",
+                description: "Atención: si borra el préstamo se perderán sus datos.<br> ¿Desea eliminar el préstamo?"
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.loanService.deleteLoan(loan.id).subscribe({
+                    next: () => {
+                        this.loadPage();
+                    },
+                    error: (error) => {
+                        alert(error.error);
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    }
 }

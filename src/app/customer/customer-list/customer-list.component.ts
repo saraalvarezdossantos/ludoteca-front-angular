@@ -48,16 +48,23 @@ export class CustomerListComponent implements OnInit {
 
   deleteCustomer(customer: Customer): void {
     const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-      data: { title: "Eliminar cliente", description: "Atención: si borra el cliente se perderán sus datos.<br> ¿Desea eliminar el cliente?" }
+      data: {
+        title: 'Eliminar cliente',
+        description: 'Atención: si borra el cliente se perderán sus datos.<br> ¿Desea eliminar el cliente?'
+      }
     });
 
-    this.customerService.deleteCustomer(customer.id).subscribe({
-      next: () => {
-        this.ngOnInit();
-      },
-      error: (error) => {
-        alert(error.error);
-        console.error(error);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.customerService.deleteCustomer(customer.id).subscribe({
+          next: () => {
+            this.ngOnInit();
+          },
+          error: (error) => {
+            alert(error.error);
+            console.error(error);
+          }
+        });
       }
     });
   }

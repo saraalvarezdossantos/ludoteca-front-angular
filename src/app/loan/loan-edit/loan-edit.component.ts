@@ -14,6 +14,7 @@ import { Customer } from 'src/app/customer/model/customer';
 })
 export class LoanEditComponent implements OnInit {
 
+
     loan: Loan;
     games: Game[];
     customers: Customer[];
@@ -69,6 +70,8 @@ export class LoanEditComponent implements OnInit {
                 }
             }
         );
+
+        //NOTA: necesito corregir lo del filtrado y la recarga de la página, por aquí
     }
 
     /*   onSave(): void {
@@ -86,6 +89,8 @@ export class LoanEditComponent implements OnInit {
         if (this.isLoanTooLong()) {
             return;
         }
+        console.log('startDate', this.loan.startDate);
+        console.log('endDate', this.loan.endDate);
 
         this.loanService.saveLoan(this.loan).subscribe({
             next: () => {
