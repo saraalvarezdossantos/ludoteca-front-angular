@@ -66,6 +66,7 @@ export class LoanListComponent implements OnInit {
         );
     }
 
+
     loadPage(event?: PageEvent): void {
 
         let pageable: Pageable = {
@@ -82,7 +83,21 @@ export class LoanListComponent implements OnInit {
             pageable.pageSize = event.pageSize;
         }
 
-        this.loanService.getLoanPage(pageable).subscribe(data => {
+        let gameId =
+            this.filterGame != null ? this.filterGame.id : null;
+
+        let customerId =
+            this.filterCustomer != null ? this.filterCustomer.id : null;
+
+        let date = this.filterDate;
+
+        this.loanService.getLoans(
+            pageable,
+            gameId,
+            customerId,
+            date
+        ).subscribe(data => {
+
             this.dataSource.data = data.content;
             this.pageNumber = data.pageable.pageNumber;
             this.pageSize = data.pageable.pageSize;
@@ -99,27 +114,10 @@ export class LoanListComponent implements OnInit {
         this.onSearch();
     }
 
+    //CORRECCIÓN: refactorizado: movido a loadpage todo lo de filtros
     onSearch(): void {
-        console.log('FILTRAR');
-
-
-        let gameId =
-            this.filterGame != null ? this.filterGame.id : null;
-
-        let customerId =
-            this.filterCustomer != null ? this.filterCustomer.id : null;
-
-        let date = this.filterDate;
-
-        this.loanService
-            .getLoans(gameId, customerId, date)
-            .subscribe(page => {
-
-                this.dataSource.data = page.content;
-                this.totalElements = page.totalElements;
-                this.pageNumber = page.pageable.pageNumber;
-                this.pageSize = page.pageable.pageSize;
-            });
+        this.pageNumber = 0;
+        this.loadPage();
     }
 
     createLoan(): void {

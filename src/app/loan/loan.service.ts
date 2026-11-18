@@ -6,6 +6,7 @@ import { LoanPage } from './model/loan-page';
 import { Pageable } from '../core/model/page/Pageable';
 import { LOAN_DATA_LIST } from './model/mock-loans-list';
 import { HttpClient } from '@angular/common/http';
+import { formatDate } from '@angular/common';
 
 
 @Injectable({
@@ -15,20 +16,13 @@ export class LoanService {
 
     constructor(private http: HttpClient) { }
 
+    //CORRECCIÓN: juntar paginación + filtros
     getLoans(
+        pageable: Pageable,
         gameId?: number,
         customerId?: number,
         date?: Date
     ): Observable<LoanPage> {
-
-        const pageable: Pageable = {
-            pageNumber: 0,
-            pageSize: 5,
-            sort: [{
-                property: 'id',
-                direction: 'ASC'
-            }]
-        };
 
         return this.http.post<LoanPage>(
             'http://localhost:8080/loan',
@@ -42,13 +36,21 @@ export class LoanService {
     }
 
     saveLoan(loan: Loan): Observable<void> {
-        let url = 'http://localhost:8080/loan';
 
-        if (loan.id != null) {
-            url += '/' + loan.id;
-        }
-        return this.http.put<void>(url, loan);
+    let url = 'http://localhost:8080/loan';
+
+    if (loan.id != null) {
+        url += '/' + loan.id;
     }
+
+    const loanToSave = {
+        ...loan,
+        startDate: formatDate(loan.startDate, 'yyyy-MM-dd', 'en'),
+        endDate: formatDate(loan.endDate, 'yyyy-MM-dd', 'en')
+    };
+
+    return this.http.put<void>(url, loanToSave);
+}
 
     getLoanPage(pageable: Pageable): Observable<LoanPage> {
         return this.http.post<LoanPage>(
