@@ -144,25 +144,30 @@ export class LoanListComponent implements OnInit {
 
     deleteLoan(loan: Loan): void {
 
-        const dialogRef = this.dialog.open(DialogConfirmationComponent, {
-            data: {
-                title: "Eliminar préstamo",
-                description: "Atención: si borra el préstamo se perderán sus datos.<br> ¿Desea eliminar el préstamo?"
-            }
-        });
+    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+        data: {
+            title: "Eliminar préstamo",
+            description: "Atención: si borra el préstamo se perderán sus datos.<br> ¿Desea eliminar el préstamo?"
+        }
+    });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.loanService.deleteLoan(loan.id).subscribe({
-                    next: () => {
-                        this.loadPage();
-                    },
-                    error: (error) => {
-                        alert(error.error);
-                        console.error(error);
+    dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+            this.loanService.deleteLoan(loan.id).subscribe({
+                next: () => {
+                    //CORRECCIÓN: si se borra el último elemento de la página, volver a la página anterior
+                    if (this.dataSource.data.length === 1 && this.pageNumber > 0) {
+                        this.pageNumber--;
                     }
-                });
-            }
-        });
-    }
+
+                    this.loadPage();
+                },
+                error: (error) => {
+                    alert(error.error);
+                    console.error(error);
+                }
+            });
+        }
+    });
+}
 }
